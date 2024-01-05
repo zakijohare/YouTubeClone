@@ -1,0 +1,1 @@
+YouTube Clone project that ustilises the YouTube data REST API aswell as modern front-end technologies, including React, Redux Toolkit, TailwindCSS, and other libraries. 
