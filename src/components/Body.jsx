@@ -1,13 +1,13 @@
 import React from "react";
 import Sidebar from "./Sidebar";
-import MainContainer from "./MainContainer";
+
 import { Outlet } from "react-router-dom";
 
 const Body = () => {
   return (
-    <div className="flex gap-16 space-y-3">
+    <div className="flex gap-16 space-y-3 w-full h-screen relative">
       <Sidebar />
-      <Outlet/>
+      <Outlet />
     </div>
   );
 };
