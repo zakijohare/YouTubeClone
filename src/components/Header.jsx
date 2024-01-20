@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { GrSearch } from "react-icons/gr";
 import {
   HAMBURGER_URL,
   USER_ICON_URL,
@@ -34,52 +36,59 @@ const Header = () => {
   }, [searchQuery]);
 
   return (
-    <div className="flex  justify-between  items-center p-4 shadow-lg">
-      <ul className="flex items-center w-1/5 space-between gap-4 ">
-        <li onClick={() => toggleMenuHandler()} className="cursor-pointer">
-          <img src={HAMBURGER_URL} alt="hamburger" className="w-10 bg-white " />
+    <div className="flex  justify-between items-center p-4 shadow-lg w-full ">
+      <ul className="flex   items-center w-1/5 gap-4   ">
+        <li
+          onClick={() => toggleMenuHandler()}
+          className="cursor-pointer text-3xl"
+        >
+          <GiHamburgerMenu />
         </li>
 
-        <li>
-          <img src={YOUTUBE_ICON_URL} alt="" className="w-28 bg-white " />
+        <li className="hidden md:block">
+          <img src={YOUTUBE_ICON_URL} alt="" className="w-32 bg-white " />
         </li>
       </ul>
-      <div className="relative">
-        <ul className="flex flex-1  justify-center  items-center">
-          <li className="">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="border p-[3px] border-black outline-none w-[400px] rounded-tl-xl  rounded-bl-xl  placeholder:px-3 px-3 text-md"
-              placeholder="search for anything..."
-              onFocus={() => setSearchSuggestions(true)}
-              onBlur={() => setSearchSuggestions(false)}
-            />
-          </li>
-          <li>
-            <button className="border-y border-r border-y-black border-r-black rounded-tr-xl  rounded-br-xl p-[3px] px-3 bg-gray-200">
-              🔍
-            </button>
-          </li>
-        </ul>
-        {searchSuggestions && (
-          <ul className="absolute z-40 bg-white w-full shadow-lg rounded-xl p-2 py-3 px-4 mt-1">
-            {searchResults.length > 0 &&
-              searchResults.map((result, i) => (
-                <li key={i} className="hover:bg-gray-200 cursor-pointer">
-                  <span className=" mr-2">🔍</span>
-                  {result}
-                </li>
-              ))}
-          </ul>
-        )}
-      </div>
+
+      <ul className="flex  justify-center   items-center  flex-1">
+        <li className="   w-1/4 md:w-2/4   flex justify-center relative">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="border p-[3px] border-black outline-none  flex-1   rounded-tl-xl  rounded-bl-xl  placeholder:px-3 placeholder:text-xs md:placeholder:text-sm  px-3 text-md"
+            placeholder="search for videos..."
+            onFocus={() => setSearchSuggestions(true)}
+            onBlur={() => setSearchSuggestions(false)}
+          />
+
+          {searchSuggestions && (
+            <ul className="absolute z-40 bg-white w-full shadow-lg rounded-xl p-2 py-3 px-4 mt-8">
+              {searchResults.length > 0 &&
+                searchResults.map((result, i) => (
+                  <li key={i} className="hover:bg-gray-200 cursor-pointer">
+                    <span className="mr-2">
+                      <GrSearch className="text-xl inline-block" />
+                    </span>
+                    {result}
+                  </li>
+                ))}
+            </ul>
+          )}
+        </li>
+        <li className="w-[30px]">
+          <button className="border-y border-r  border-y-black border-r-black rounded-tr-xl  flex justify-center  rounded-br-xl p-[5px] px-5 w-full  bg-gray-200">
+            <div>
+              <GrSearch className="text-xl   " />
+            </div>
+          </button>
+        </li>
+      </ul>
+
       <ul className="flex w-1/5 justify-end items-center">
         <li>
-          <img src={USER_ICON_URL} alt="user" className="w-10" />
+          <img src={USER_ICON_URL} alt="user" className="w-[2.5rem]" />
         </li>
-        <li className="font-bold">USER</li>
       </ul>
     </div>
   );
