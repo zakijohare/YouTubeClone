@@ -4,6 +4,7 @@ import { SiYoutube } from "react-icons/si";
 import { BiVideoPlus } from "react-icons/bi";
 import { GrSearch } from "react-icons/gr";
 import { BiSolidUserCircle } from "react-icons/bi";
+import { MdOutlineClear } from "react-icons/md";
 
 import { IoMdNotificationsOutline } from "react-icons/io";
 import {
@@ -17,13 +18,16 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMenu } from "../utils/appSlice";
 import {
+  clearSearchQuery,
+  getSearchQuery,
   getSearchSuggestionData,
   getSearchSuggestionQuery,
 } from "../utils/searchSlice";
 import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const searchQuery1 = useSelector((store) => store.search.searchQuery);
+
   const navigate = useNavigate();
 
   const [searchSuggestions, setSearchSuggestions] = useState(false);
@@ -35,22 +39,31 @@ const Header = () => {
     dispatch(toggleMenu());
   };
   const getSearchSuggestions = async () => {
-    const data = await fetch(YOUTUBE_SEARCH_API + searchQuery);
-    const result = await data.json();
-    dispatch(getSearchSuggestionQuery(result[1]));
-    console.log(result);
+    try {
+      const data = await fetch(YOUTUBE_SEARCH_API + searchQuery1);
+      const result = await data.json();
+      dispatch(getSearchSuggestionQuery(result[1]));
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
   };
   const getSearchSuggestionsResults = async (e) => {
-    if (searchQuery.length > 0) {
+    try {
       e.preventDefault();
-      navigate(`/results?search_query=${searchQuery}`);
-      const data = await fetch(
-        `${YOUTUBE_SEARCH_RESULTS_API}q=${searchQuery}&key=${GOOGLE_API_KEY}`
-      );
-      const result = await data.json();
-      dispatch(getSearchSuggestionData(result?.items));
-      console.log(result);
-      setSearchQuery("");
+      if (searchQuery1.length > 0) {
+        navigate(`/results?search_query=${searchQuery1}`);
+        const data = await fetch(
+          `${YOUTUBE_SEARCH_RESULTS_API}q=${searchQuery1}&key=${GOOGLE_API_KEY}`
+        );
+        const result = await data.json();
+        dispatch(getSearchSuggestionData(result?.items));
+        console.log(result);
+
+        setSearchSuggestions(!searchSuggestions);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   useEffect(() => {
@@ -60,7 +73,7 @@ const Header = () => {
     return () => {
       clearTimeout(timer);
     };
-  }, [searchQuery]);
+  }, [searchQuery1]);
 
   // const handleResultOnClick = (i) => {
   //   console.log(searchSuggestionList[i], "world");
@@ -86,41 +99,56 @@ const Header = () => {
       <form
         className="flex  justify-center   items-center    flex-1 "
         onSubmit={(e) => getSearchSuggestionsResults(e)}
+        onBlur={() =>
+          searchQuery1.length === 0 && setSearchSuggestions(!searchSuggestions)
+        }
       >
-        <div className="  w-2/4    flex  justify-start  md:justify-center relative">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border p-[3px] border-black outline-none  w-full   rounded-tl-xl  rounded-bl-xl  placeholder:px-3 placeholder:text-xs md:placeholder:text-sm  px-1 truncate text-md"
-            placeholder="search for videos..."
-            onFocus={() => setSearchSuggestions(true)}
-            onBlur={() => setSearchSuggestions(false)}
-          />
+        <div className="  flex-1     flex  justify-center  md:justify-center ">
+          <div className=" flex justify-between w-2/4 relative">
+            <input
+              type="text"
+              value={searchQuery1}
+              onChange={(e) => dispatch(getSearchQuery(e.target.value))}
+              className="   border-y border-l border-y-black border-l-black p-[3px]     w-full   rounded-tl-xl  rounded-bl-xl  placeholder:px-3 placeholder:text-xs md:placeholder:text-sm   truncate text-md"
+              placeholder="Search"
+              onFocus={() => setSearchSuggestions(!searchSuggestions)}
+            />
+            {searchQuery1.length > 0 && (
+              <button
+                className="border-y border-y-black "
+                onClick={() => dispatch(clearSearchQuery())}
+              >
+                <MdOutlineClear className=" text-red-600 text-2xl mt-1 mr-1" />
+              </button>
+            )}
 
-          {searchSuggestions && (
-            <div className="absolute z-40 bg-white w-full shadow-lg rounded-xl p-2 py-3 px-4 mt-8">
-              {searchSuggestionList.length > 0 &&
-                searchSuggestionList.map((result, i) => (
-                  <button
-                    key={i}
-                    className="hover:bg-gray-200 cursor-pointer block"
-                  >
-                    <span className="mr-2">
-                      <GrSearch className="text-xl inline-block" />
-                    </span>
-                    {result}
-                  </button>
-                ))}
-            </div>
-          )}
-        </div>
-        <div className=" w-[20px] md:w-[2rem]">
-          <button className="border-y border-r  border-y-black border-r-black rounded-tr-xl  flex justify-center  rounded-br-xl p-[5px] px-5 w-full  bg-gray-200">
-            <div>
-              <GrSearch className="text-xl   " />
-            </div>
-          </button>
+            {searchSuggestions && (
+              <div className="absolute z-40 bg-white w-full  shadow-lg rounded-xl p-2 py-3 px-4 mt-9">
+                {searchSuggestionList.length > 0 &&
+                  searchSuggestionList.map((result, i) => (
+                    <button
+                      className="  flex hover:bg-gray-200 w-full  cursor-pointer "
+                      key={i}
+                      onClick={() => dispatch(getSearchQuery(result))}
+                    >
+                      <span>
+                        <span className="mr-2">
+                          <GrSearch className="text-xl inline-block" />
+                        </span>
+                        {result}
+                      </span>
+                    </button>
+                  ))}
+              </div>
+            )}
+          </div>
+          <div className=" w-[20px] md:w-[2rem]">
+            <button className="border-y border-r  border-y-black border-r-black rounded-tr-xl  flex justify-center  rounded-br-xl p-[5px] px-5 w-full  bg-gray-200">
+              <div>
+                <GrSearch className="text-xl   " />
+              </div>
+            </button>
+          </div>
         </div>
       </form>
 
