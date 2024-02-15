@@ -42,12 +42,22 @@ const Header = () => {
     try {
       const data = await fetch(YOUTUBE_SEARCH_API + searchQuery1);
       const result = await data.json();
-      dispatch(getSearchSuggestionQuery(result[1]));
-      console.log(result);
+      dispatch(getSearchSuggestionQuery(result?.data[1]));
     } catch (error) {
       console.log(error);
     }
   };
+
+  // const getVideosByCORS = async () => {
+  //   try {
+  //     const data = await fetch("http://localhost:8000/?q=" + searchQuery1);
+  //     const result = await data.json();
+  //     console.log("from server", result?.data[1]);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
   const getSearchSuggestionsResults = async (e) => {
     try {
       e.preventDefault();
@@ -58,9 +68,9 @@ const Header = () => {
         );
         const result = await data.json();
         dispatch(getSearchSuggestionData(result?.items));
-        console.log(result);
 
         setSearchSuggestions(!searchSuggestions);
+        dispatch(getSearchSuggestionQuery(""));
       }
     } catch (error) {
       console.log(error);
@@ -80,8 +90,8 @@ const Header = () => {
   // };
 
   return (
-    <div className="flex  justify-between items-center p-4 shadow-lg w-full relative ">
-      <ul className="flex   items-center   w-1/6  gap-6   ">
+    <div className="flex  justify-between items-center p-2 md:p-4 shadow-lg w-full relative ">
+      <ul className="flex   items-center   w-[40px] md:w-[220px]  md:gap-6  ">
         <li
           onClick={() => toggleMenuHandler()}
           className="cursor-pointer text-3xl"
@@ -97,14 +107,14 @@ const Header = () => {
       </ul>
 
       <form
-        className="flex  justify-center   items-center    flex-1 "
+        className="flex justify-center   items-center    md:w-3/6 b"
         onSubmit={(e) => getSearchSuggestionsResults(e)}
         onBlur={() =>
           searchQuery1.length === 0 && setSearchSuggestions(!searchSuggestions)
         }
       >
-        <div className="  flex-1     flex  justify-center  md:justify-center ">
-          <div className=" flex justify-between w-2/4 relative">
+        <div className="flex-1     flex  justify-center  md:justify-center ">
+          <div className=" flex justify-between w-3/4 md:w-3/4 relative">
             <input
               type="text"
               value={searchQuery1}
@@ -152,11 +162,11 @@ const Header = () => {
         </div>
       </form>
 
-      <ul className="flex      md:w-1/6     justify-end items-center gap-1 overflow-hidden ">
-        <li className="hover:bg-gray-200 hover:rounded-full hover:p-2 p-2">
+      <ul className="flex      w-1/6 md:w-[150px]    justify-end items-center gap-1 overflow-hidden ">
+        <li className="hidden md:block hover:bg-gray-200 hover:rounded-full hover:p-2 p-2">
           <BiVideoPlus className="text-2xl" />
         </li>
-        <li className="hover:bg-gray-200 hover:rounded-full hover:p-2 p-2">
+        <li className="hover:bg-gray-200 hover:rounded-full hover:p-2 p-2 hidden md:block ">
           <IoMdNotificationsOutline className="text-2xl" />
         </li>
         <li>
